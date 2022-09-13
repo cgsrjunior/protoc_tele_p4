@@ -33,13 +33,28 @@ header ipv4_t {
     ip4Addr_t dstAddr;
 }
 
+header tcp_t {
+    bit<16> srcPort;
+    bit<16> dstPort;
+    bit<32> seqNo;
+    bit<32> ackNo;
+    bit<4>  dataOffset;
+    bit<3>  res;
+    bit<3>  ecn;
+    bit<6>  ctrl;
+    bit<16> window;
+    bit<16> checksum;
+    bit<16> urgentPtr;
+}
+
 struct metadata {
     /* empty */
 }
 
 struct headers {
-    ethernet_t   ethernet;
-    ipv4_t       ipv4;
+    ethernet_t  ethernet;
+    ipv4_t      ipv4;
+    tcp_t        tcp;
 }
 
 /*************************************************************************
@@ -68,6 +83,10 @@ parser MyParser(packet_in packet,
         transition accept;
     }
 
+    state parse_tcp {
+        packet.extract(hdr.tcp);
+        transition accept;
+    }
 }
 
 /*************************************************************************
