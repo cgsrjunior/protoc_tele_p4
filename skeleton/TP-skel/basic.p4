@@ -47,6 +47,21 @@ header tcp_t {
     bit<16> urgentPtr;
 }
 
+header int_pai_t {
+    bit<32> Tamanho_Filho;
+    bit<32> Quantidade_Filhos;
+    //* Outros Dados *//
+}
+
+header int_filho_t {
+    bit<32> ID_Switch;
+    bit<9> Porta_Entrada;
+    bit<9> Porta_Saida;
+    bit<48> Timestamp;
+    //* Outros Dados *//
+    bit<6> padding; // deve ser múltiplo de 8
+}
+
 struct metadata {
     /* empty */
 }
@@ -54,7 +69,9 @@ struct metadata {
 struct headers {
     ethernet_t  ethernet;
     ipv4_t      ipv4;
-    tcp_t        tcp;
+    tcp_t       tcp;
+    int_pai_t   int_pai;
+    int_filho_t int_filho;
 }
 
 /*************************************************************************
@@ -85,6 +102,16 @@ parser MyParser(packet_in packet,
 
     state parse_tcp {
         packet.extract(hdr.tcp);
+        transition accept;
+    }
+
+    state parse_int_pai {
+        packet.extract(hdr.int_pai);
+        transition accept;
+    }
+
+    state parse_int_filho {
+        packet.extract(hdr.int_filho);
         transition accept;
     }
 }
